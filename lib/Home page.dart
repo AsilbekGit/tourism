@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'RestaurantDescr.dart';
+import 'Sightdescr.dart';
+import 'description.dart';
+
 class HomePage extends StatelessWidget {
 
 
@@ -90,17 +94,17 @@ class HomePage extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           buildSectionTitle(context, 'Popular Cities'),
-          buildHorizontalList(popularCities),
+          buildHorizontalList(context,popularCities),
           buildSectionTitle(context, 'Restaurants'),
-          buildHorizontalList(restaurants),
+          buildHorizontalList(context,restaurants),
           buildSectionTitle(context, 'Popular Sights'),
-          buildHorizontalList(popularSights),
+          buildHorizontalList(context,popularSights),
         ],
       ),
     );
   }
 
-  Widget buildSectionTitle(BuildContext context, String title) {
+  Widget buildSectionTitle( context, String title) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
@@ -110,29 +114,56 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildHorizontalList(List<Item> items) {
+  Widget buildHorizontalList(BuildContext context, List<Item> items) {
     return Container(
       height: 130,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         itemBuilder: (ctx, index) {
-          return Card(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  width: 300,
-                  height: 100,
-                  child: Image.asset(items[index].imagePath,fit: BoxFit.cover,),
-                ),
-                Text(items[index].name),
-              ],
+          return GestureDetector(
+            onTap: () {
+              if (items[index] is City) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CityDescriptionPage(city: items[index] as City),
+                  ),
+                );
+              } else if (items[index] is Restaurant) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestaurantDescriptionPage(restaurant: items[index] as Restaurant),
+                  ),
+                );
+              } else if (items[index] is Sight) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SightDescriptionPage(sight: items[index] as Sight),
+                  ),
+                );
+              }
+            },
+            child: Card(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: 300,
+                    height: 100,
+                    child: Image.asset(items[index].imagePath,fit: BoxFit.cover,),
+                  ),
+                  Text(items[index].name),
+                ],
+              ),
             ),
           );
         },
       ),
     );
   }
+
 }
 
 class Item {
@@ -144,7 +175,7 @@ class Item {
 
 class City extends Item {
   City({required String name, required String imagePath})
-      : super(name: name, imagePath: imagePath);
+      : super(name: name, imagePath: imagePath,);
 }
 
 class Restaurant extends Item {
